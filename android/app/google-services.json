@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "801564116831",
+    "firebase_url": "https://scicare-fff000.firebaseio.com",
+    "project_id": "scicare-fff000",
+    "storage_bucket": "scicare-fff000.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:801564116831:android:2f04b4d1b95a0565d658ea",
+        "android_client_info": {
+          "package_name": "myapp.scicare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "801564116831-b6iidpr0hejefvcbjd8qgl04v535b69p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTifMs3kyXFoJTqPNtg5bfuTI_nI3MmeM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "801564116831-b6iidpr0hejefvcbjd8qgl04v535b69p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
