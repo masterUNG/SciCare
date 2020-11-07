@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:scicare/models/answer_model.dart';
 import 'package:scicare/models/post_model.dart';
 import 'package:scicare/models/user_model.dart';
 import 'package:scicare/widgets/constant.dart';
@@ -24,12 +25,32 @@ class _MessegeStdState extends State<MessegeStd> {
   List<PostModel> postModels = List();
   bool showStatus = true;
   String idLogin;
+  List<AnswerModel> answerModels = List();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     findUser();
+  }
+
+  Future<Null> readAnswer() async {
+    await Firebase.initializeApp().then((value) async {
+      await FirebaseFirestore.instance
+          .collection('PostPsu')
+          .doc(userLogined)
+          .collection('Answer')
+          .snapshots()
+          .listen((event) {
+        for (var snapshot in event.docs) {
+          AnswerModel model = AnswerModel.fromJson(snapshot.data());
+          print('########## answwr ===>> ${model.answer}');
+          setState(() {
+            answerModels.add(model);
+          });
+        }
+      });
+    });
   }
 
   Future<Null> readAllPost() async {
@@ -62,6 +83,7 @@ class _MessegeStdState extends State<MessegeStd> {
     userLoginHind = '${userLoginHind}xxx';
     print('userLoginHind ==>> $userLoginHind');
     readAllPost();
+    readAnswer();
 
     String id = preferences.getString('id');
     String path =
@@ -87,7 +109,7 @@ class _MessegeStdState extends State<MessegeStd> {
         UserModel3 model = UserModel3.fromJson(json);
         setState(() {
           urlImageAdmin = model.urlProfile;
-          print('########### urlImageAdmin ===>> $urlImageAdmin');
+          // print('########### urlImageAdmin ===>> $urlImageAdmin');
         });
       }
     });
@@ -108,73 +130,100 @@ class _MessegeStdState extends State<MessegeStd> {
 
   Widget buildListMessage() => postModels.length == 0
       ? Center(child: Text('No Message'))
-      : ListView.builder(
-          physics: ScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: postModels.length,
-          itemBuilder: (context, index) => Card(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width - 60,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(postModels[index].message),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
+      : Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5 - 5,
+              child: answerModels.length == 0
+                  ? SizedBox()
+                  : ListView.builder(
+                      itemCount: answerModels.length,
+                      itemBuilder: (context, index) =>
+                          Text(answerModels[index].answer),
+                    ),
+            ),
+            buildListQuestion(),
+          ],
+        );
+
+  Widget buildListQuestion() {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5 - 5,
+      child: ListView.builder(
+        physics: ScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: postModels.length,
+        itemBuilder: (context, index) => Card(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * 0.5 - 70,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.5 - 80,
+                          child: Text(postModels[index].message),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.5 - 80,
+                          child: Text(
                             postModels[index].dateTimeMessage,
                             style: TextStyle(fontStyle: FontStyle.italic),
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          postModels[index].answerAdmin == null
-                              ? SizedBox()
-                              : Row(
-                                  children: [
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      child: urlImageAdmin == null
-                                          ? SizedBox()
-                                          : CircleAvatar(
-                                              backgroundImage: NetworkImage(
-                                                  '${MyConstant().domain}$urlImageAdmin'),
-                                            ),
-                                    ),
-                                    SizedBox(
-                                      width: 16,
-                                    ),
-                                    Text(postModels[index].answerAdmin),
-                                  ],
-                                ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 48,
-                  height: 48,
-                  child: urlImegeUser == null
-                      ? SizedBox()
-                      : CircleAvatar(
-                          backgroundImage: NetworkImage(urlImegeUser),
                         ),
-                )
-              ],
-            ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        postModels[index].answerAdmin == null
+                            ? SizedBox()
+                            : Row(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    child: urlImageAdmin == null
+                                        ? SizedBox()
+                                        : CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                                '${MyConstant().domain}$urlImageAdmin'),
+                                          ),
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  ),
+                                  Text(postModels[index].answerAdmin),
+                                ],
+                              ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                width: 48,
+                height: 48,
+                child: urlImegeUser == null
+                    ? SizedBox()
+                    : CircleAvatar(
+                        backgroundImage: NetworkImage(urlImegeUser),
+                      ),
+              )
+            ],
           ),
-        );
+        ),
+      ),
+    );
+  }
 
   Future<Null> postProcess() async {
     await Firebase.initializeApp().then((value) async {
