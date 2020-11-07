@@ -23,6 +23,7 @@ class _MessegeStdState extends State<MessegeStd> {
   String userLogined, userLoginHind, postString, urlImegeUser, urlImageAdmin;
   List<PostModel> postModels = List();
   bool showStatus = true;
+  String idLogin;
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _MessegeStdState extends State<MessegeStd> {
   Future<Null> findUser() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     userLogined = preferences.getString('Username');
+    idLogin = preferences.getString('id');
     userLoginHind = userLogined.substring(0, userLogined.length - 3);
     userLoginHind = '${userLoginHind}xxx';
     print('userLoginHind ==>> $userLoginHind');
@@ -185,7 +187,7 @@ class _MessegeStdState extends State<MessegeStd> {
       map['DateTimeMessage'] = dateTimeString;
 
       Map<String, dynamic> map2 = Map();
-      map2['Name'] = 'Name';
+      map2['id'] = idLogin;
 
       await FirebaseFirestore.instance
           .collection('PostPsu')
